@@ -1,4 +1,8 @@
 .DS_Store
+.idea/
+.project/
 .vagrant/
 vagrant_ansible_inventory_default
 drupal.make.yml
+examples/prod/inventory
+scripts/
