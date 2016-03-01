@@ -1,7 +1,11 @@
 ---
 # Vagrant hostname and IP configuration.
+vagrant_box: geerlingguy/ubuntu1404
+vagrant_user: vagrant
 vagrant_hostname: ilr-website.dev
+vagrant_machine_name: ilrdevvm
 vagrant_ip: 192.168.88.89
+vagrant_public_ip: ""
 
 # A list of synced folders, with the keys 'local_path', 'destination', and 'id'.
 vagrant_synced_folders:
@@ -9,6 +13,7 @@ vagrant_synced_folders:
     destination: "/var/www/ilr-website"
     id: ilr-website
     type: nfs
+    create: false
 
 # Memory and CPU to use for this VM.
 vagrant_memory: 4096
@@ -18,21 +23,16 @@ vagrant_cpus: 2
 mysql_root_password: root
 drush_version: master
 
-# Comment out any extra utilities you don't want to install.
-installed_extras:
-  - mailhog
-  - xdebug
-  - xhprof
+# Set this to false if you are using a different site deployment strategy and
+# would like to configure 'vagrant_synced_folders' and 'apache_vhosts' manually.
+build_makefile: false
+drush_makefile_path: /vagrant/drupal.make.yml
+drupalvm_webserver: apache
 
-firewall_allowed_tcp_ports:
-  - "22"
-  - "25"
-  - "80"
-  - "443"
-  - "3306"
-  - "8025"
-  - "8080"
-  - "8443"
+# Set this to false if you don't need to install drupal (using the drupal_*
+# settings below), but instead copy down a database (e.g. using drush sql-sync).
+install_site: false
+
 
 # Major release of drupal in use (6, 7, 8, etc.). Be sure to update the core
 # version inside the drupal.make file if you change the major version here.
@@ -48,13 +48,92 @@ drupal_install_profile: ilr
 # TODO - REMOVE THIS VARIABLE AFTER ANSIBLE 1.8.3+
 drush_keep_updated: yes
 
+drupal_account_name: "ilrweb admin"
+drupal_account_pass: testing
 drupal_mysql_user: drupal
 drupal_mysql_password: drupal
 drupal_mysql_database: ilr
 
+
+# Additional arguments or options to pass to `drush site-install`.
+drupal_site_install_extra_args: []
+
+drupalvm_cron_jobs: []
+configure_local_drush_aliases: false
+
+
 apache_vhosts:
-  - {servername: "{{ drupal_domain }}", documentroot: "{{ drupal_core_path }}"}
-  - {servername: "local.xhprof.com", documentroot: "/usr/share/php/xhprof_html"}
+  - servername: "{{ drupal_domain }}"
+    documentroot: "{{ drupal_core_path }}"
+
+  - servername: "adminer.ilr-website.dev"
+    documentroot: "/opt/adminer"
+
+  - servername: "xhprof.ilr-website.dev"
+    documentroot: "/usr/share/php/xhprof_html"
+
+  - servername: "pimpmylog.ilr-website.dev"
+    documentroot: "/usr/share/php/pimpmylog"
+
+apache_remove_default_vhost: true
+apache_mods_enabled:
+  - expires.load
+  - ssl.load
+  - rewrite.load
+
+mysql_databases:
+  - name: "{{ drupal_mysql_database }}"
+    encoding: utf8
+    collation: utf8_general_ci
+
+mysql_users:
+  - name: "{{ drupal_mysql_user }}"
+    host: "%"
+    password: "{{ drupal_mysql_password }}"
+    priv: "{{ drupal_mysql_database }}.*:ALL"
+
+
+# Comment out any extra utilities you don't want to install.
+installed_extras:
+  - adminer
+  #- drupalconsole
+  - mailhog
+  - memcached
+  # - nodejs
+  - pimpmylog
+  # - redis
+  # - ruby
+  # - selenium
+  # - solr
+  # - varnish
+  - xdebug
+  - xhprof
+
+extra_packages:
+  - unzip
+
+
+# You can configure almost anything else on the server in the rest of this file.
+extra_security_enabled: false
+
+drush_version: master
+drush_keep_updated: true
+drush_composer_cli_options: "--prefer-dist --no-interaction"
+
+firewall_allowed_tcp_ports:
+  - "22"
+  - "25"
+  - "80"
+  - "81"
+  - "443"
+  - "3306"
+  - "4444"
+  - "8025"
+  - "8080"
+  - "8443"
+  - "8983"
+firewall_log_dropped_packets: false
+
 
 php_memory_limit: "256M"
 php_display_errors: "On"
@@ -64,3 +143,62 @@ php_sendmail_path: "/usr/sbin/ssmtp -t"
 # Disable main XDebug components unless needed.
 php_xdebug_coverage_enable: 0
 php_xdebug_default_enable: 0
+
+php_version: "5.6"
+php_memory_limit: "192M"
+php_display_errors: "On"
+php_display_startup_errors: "On"
+php_enable_php_fpm: true
+php_realpath_cache_size: "1024K"
+php_sendmail_path: "/usr/sbin/ssmtp -t"
+php_opcache_enabled_in_ini: true
+php_opcache_memory_consumption: "192"
+php_opcache_max_accelerated_files: 4096
+php_max_input_vars: "4000"
+
+composer_path: /usr/bin/composer
+composer_home_path: '/home/vagrant/.composer'
+
+# Run specified scripts after VM is provisioned. Path is relative to the
+# `provisioning/playbook.yml` file.
+post_provision_scripts: []
+  # - "../examples/scripts/configure-solr.sh"
+
+# MySQL Configuration.
+mysql_root_password: root
+mysql_slow_query_log_enabled: true
+mysql_slow_query_time: 2
+mysql_wait_timeout: 300
+adminer_install_filename: index.php
+
+# Varnish Configuration.
+varnish_listen_port: "81"
+varnish_default_vcl_template_path: templates/drupalvm.vcl.j2
+varnish_default_backend_host: "127.0.0.1"
+varnish_default_backend_port: "80"
+
+# Pimp my Log settings.
+pimpmylog_install_dir: /usr/share/php/pimpmylog
+pimpmylog_grant_all_privs: true
+
+# XDebug configuration. XDebug is disabled by default for better performance.
+php_xdebug_default_enable: 1
+php_xdebug_coverage_enable: 1
+php_xdebug_cli_enable: 1
+php_xdebug_remote_enable: 1
+php_xdebug_remote_connect_back: 1
+# Use PHPSTORM for PHPStorm, sublime.xdebug for Sublime Text.
+php_xdebug_idekey: sublime.xdebug
+php_xdebug_max_nesting_level: 256
+
+# Solr Configuration (if enabled above).
+solr_version: "4.10.4"
+solr_xms: "64M"
+solr_xmx: "128M"
+
+# Selenium configuration.
+selenium_version: 2.46.0
+
+# Other configuration.
+known_hosts_path: ~/.ssh/known_hosts
+
