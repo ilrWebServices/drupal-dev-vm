@@ -2,7 +2,11 @@
 .idea/
 .project/
 .vagrant/
+.bundle/
 vagrant_ansible_inventory_default
 drupal.make.yml
+Vagrantfile.local
 examples/prod/inventory
+examples/prod/bootstrap/vars.yml
 scripts/
+roles/

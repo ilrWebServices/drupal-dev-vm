@@ -1,7 +1,9 @@
 ---
 - hosts: all
+  become: yes
 
   vars_files:
+    - vars/main.yml
     - ../config.yml
 
   pre_tasks:
@@ -22,6 +24,7 @@
     - geerlingguy.git
     - geerlingguy.postfix
     - { role: geerlingguy.apache, when: drupalvm_webserver == 'apache' }
+    - { role: geerlingguy.apache-php-fpm, when: drupalvm_webserver == 'apache' }
     - { role: geerlingguy.nginx, when: drupalvm_webserver == 'nginx' }
     - geerlingguy.mysql
     - geerlingguy.php
@@ -74,6 +77,10 @@
     - include: tasks/drush-aliases.yml
     - include: tasks/cron.yml
 
+    - include: tasks/dashboard.yml
+      when: dashboard_install_dir is defined and dashboard_install_dir != ''
+
     - name: Run configured post-provision shell scripts.
       script: "{{ item }}"
-      with_items: post_provision_scripts
+      with_items: "{{ post_provision_scripts }}"
+      when: post_provision_scripts is defined
