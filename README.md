@@ -2,13 +2,13 @@
 
 This project is a fork of [Jeff Geerling's](https://github.com/geerlingguy) [Drupal Dev VM](https://github.com/geerlingguy/drupal-dev-vm), which aims to make spinning up a simple local Drupal test/development environment incredibly quick and easy. Feel free to consult the original [project readme](README-prefork.md) for further background and information. The essential information from that readme has been copied here.
 
-It will install the following on an Ubuntu 14.04 (by default) linux VM:
+It will install the following on an Ubuntu 16.04 (by default) linux VM:
 
   - Apache 2.4.x (or Nginx 1.x)
-  - PHP 5.6.x (configurable)
-  - MySQL 5.5.x
+  - PHP 7.0.x (configurable)
+  - MySQL 5.7.x
   - Drush (configurable)
-  - Drupal 6.x, 7.x, or 8.x.x (configurable)
+  - Drupal 7.x, or 8.x.x (configurable)
   - Optional:
     - Drupal Console
     - Varnish 4.x (configurable)
@@ -18,7 +18,9 @@ It will install the following on an Ubuntu 14.04 (by default) linux VM:
     - Ruby
     - Memcached
     - Redis
+    - SQLite
     - XHProf, for profiling your code
+    - Blackfire, for profiling your code
     - XDebug, for debugging your code
     - Adminer, for accessing databases directly
     - Pimp my Log, for easy viewing of log files
@@ -50,7 +52,7 @@ This Quick Start Guide will help you quickly build a Drupal 8 site on the Drupal
 
   1. Download this project and put it wherever you want.
   2. Make sure that the appropriate Drupal project is cloned to your local system in the same parent directory as this project and referenced appropriately in config.yml.
-  4. Open Terminal, cd to this directory and run `$ sudo ansible-galaxy install -r provisioning/requirements.yml --force`.
+  4. Open Terminal, `cd` to this directory (containing the `Vagrantfile` and this README file).
   6. Type in `vagrant up`, and let Vagrant do its magic.
 
 Note: *If there are any errors during the course of running `vagrant up`, and it drops you back to your command prompt, just run `vagrant provision` to continue building the VM from where you left off. If there are still errors after doing this a few times, post an issue to this project's issue queue on GitHub with the error.*
@@ -85,9 +87,11 @@ By default, this VM includes the extras listed in the `config.yml` option `insta
 
     installed_extras:
       - adminer
-      # - drupalconsole
+      # - blackfire
+      - drupalconsole
       - mailhog
-      - memcached
+      # - memcached
+      # - newrelic
       # - nodejs
       - pimpmylog
       # - redis
@@ -95,8 +99,8 @@ By default, this VM includes the extras listed in the `config.yml` option `insta
       # - selenium
       # - solr
       - varnish
-      - xdebug
-      - xhprof
+      # - xdebug
+      # - xhprof
 
 If you don't want or need one or more of these extras, just delete them or comment them from the list. This is helpful if you want to reduce PHP memory usage or otherwise conserve system resources.
 

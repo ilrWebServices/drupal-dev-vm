@@ -28,8 +28,8 @@ vagrant_synced_folders:
     create: true
 
 # Memory and CPU to use for this VM.
-vagrant_memory: 4096
-vagrant_cpus: 2
+vagrant_memory: 4096 # Or 1/4 of the total RAM available on your computer
+vagrant_cpus: 2 # Note that if using this vm with VirtualBox, you should change this value to 1 to improve performance
 
 # The web server software to use. Can be either 'apache' or 'nginx'.
 drupalvm_webserver: apache
