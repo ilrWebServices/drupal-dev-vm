@@ -73,8 +73,8 @@ By default, this VM is set up so you can manage mysql databases on your own. The
   1. Use the SSH connection type.
   2. Set the following options:
     - MySQL Host: `127.0.0.1`
-    - Username: `root`
-    - Password: `root` (or whatever password you chose in `config.yml`)
+    - Username: `drupal`
+    - Password: `drupal` (or whatever password you chose in `config.yml`)
     - SSH Host: `192.168.88.89` (or whatever IP you chose in `config.yml`)
     - SSH User: `vagrant`
     - SSH Key: (browse to your `~/.vagrant.d/` folder and choose `insecure_private_key`)
