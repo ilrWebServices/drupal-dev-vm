@@ -15,9 +15,9 @@ Add and configure the `config.yml` anywhere you like, in this example we place i
 _Note: This will be the directory where Drupal VM looks for other local configuration files as well. Such as [`local.config.yml` and `Vagrantfile.local`](overriding-configurations.md)._
 
 ```
+├── composer.json
 ├── config/
 │   ├── config.yml
-│   ├── drupal.make.yml
 │   ├── local.config.yml
 │   └── Vagrantfile.local
 ├── docroot/
@@ -29,11 +29,21 @@ _Note: This will be the directory where Drupal VM looks for other local configur
         └── drupal-vm/
 ```
 
-If you're using `pre_provision_scripts` or `post_provision_scripts` you also need to adjust their paths to take into account the new directory structure. The examples used in `example.config.yml` assume the files are located in the Drupal VM directory. If you use relative paths you need to the ascend the directory tree as far as the project root, but using the `config_dir` variable you get the absolute path of where you `config.yml` is located.
+Change the build strategy to use your `composer.json` file by setting:
+
+```yaml
+build_composer_project: false
+build_composer: true
+drupal_composer_path: false
+drupal_composer_install_dir: "/var/www/drupalvm"
+drupal_core_path: "{{ drupal_composer_install_dir }}/docroot"
+```
+
+If you're using `pre_provision_scripts` or `post_provision_scripts` you also need to adjust their paths to take into account the new directory structure. The examples used in `default.config.yml` assume the files are located in the Drupal VM directory. If you use relative paths you need to the ascend the directory tree as far as the project root, but using the `config_dir` variable you get the absolute path of where you `config.yml` is located.
 
 ```yaml
 post_provision_scripts:
-  # The default provided in `example.config.yml`:
+  # The default provided in `default.config.yml`:
   - "../../examples/scripts/configure-solr.sh"
   # With Drupal VM as a Composer dependency:
   - "{{ config_dir }}/../examples/scripts/configure-solr.sh"
@@ -66,7 +76,6 @@ Your project structure should now look like this:
 ├── composer.json
 ├── config/
 │   ├── config.yml
-│   ├── drupal.make.yml
 │   ├── local.config.yml
 │   └── Vagrantfile.local
 ├── docroot/
@@ -98,7 +107,7 @@ If you don't use `composer` in your project you can still download  Drupal VM (o
 │   └── index.php
 └── box/
     ├── ...
-    ├── example.config.yml
+    ├── default.config.yml
     └── Vagrantfile
 ```
 
@@ -106,7 +115,7 @@ Configure your `config.yml` as mentioned in the [`composer` section](#setup-your
 
 ```yaml
 post_provision_scripts:
-  # The default provided in `example.config.yml`:
+  # The default provided in `default.config.yml`:
   - "../../examples/scripts/configure-solr.sh"
   # With Drupal VM in a toplevel subdirectory
   - "{{ config_dir }}/../examples/scripts/configure-solr.sh"
@@ -117,7 +126,6 @@ Your directory structure should now look like this:
 ```
 ├── Vagrantfile
 ├── config/
-│   ├── drupal.make.yml
 │   ├── config.yml
 │   ├── local.config.yml
 │   └── Vagrantfile.local
@@ -126,7 +134,7 @@ Your directory structure should now look like this:
 │   └── index.php
 └── box/
     ├── ...
-    ├── example.config.yml
+    ├── default.config.yml
     └── Vagrantfile
 ```
 

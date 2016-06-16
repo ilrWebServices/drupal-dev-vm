@@ -6,7 +6,7 @@ _Note: If you have Ansible installed on your host machine, make sure you're runn
 
 Ubuntu 16.04 Xenial defaults to PHP 7.0 in it's system packages. No older versions of PHP will be supported if using this base box.
 
-## Ubuntu 14.04
+## Ubuntu 14.04 / Ubuntu 12.04
 
 Ondřej Surý's PPA for PHP 7.0 is used to install PHP 7, but you can switch to using different 5.6 packages instead by making the following changes to `config.yml`:
 
@@ -37,10 +37,6 @@ php_fpm_daemon: php5-fpm
 php_fpm_conf_path: "/etc/php5/fpm"
 php_fpm_pool_conf_path: "/etc/php5/fpm/pool.d/www.conf"
 php_mysql_package: php5-mysql
-php_memcached_package: php5-memcached
-
-xhprof_download_url: https://github.com/phacility/xhprof/archive/master.tar.gz
-xhprof_download_folder_name: xhprof-master
 ```
 
 If you're using Apache with `mod_php` you should also add `libapache2-mod-php5` to the `php_packages` list.

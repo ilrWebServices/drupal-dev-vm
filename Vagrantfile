@@ -1,6 +1,7 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 VAGRANTFILE_API_VERSION = '2'
+Vagrant.require_version '>= 1.8.1'
 
 # Absolute paths on the host machine.
 host_drupalvm_dir = File.dirname(File.expand_path(__FILE__))
@@ -34,15 +35,14 @@ def walk(obj, &fn)
   end
 end
 
-# Use config.yml and local.config.yml for VM configuration.
 require 'yaml'
-unless File.exist?("#{host_config_dir}/config.yml")
-  raise 'Configuration file not found! Please copy example.config.yml to config.yml and try again.'
-end
-vconfig = YAML.load_file("#{host_config_dir}/config.yml")
-# Include a local.config.yml file if available.
-if File.exist?("#{host_config_dir}/local.config.yml")
-  vconfig.merge!(YAML.load_file("#{host_config_dir}/local.config.yml"))
+# Load default VM configurations.
+vconfig = YAML.load_file("#{host_drupalvm_dir}/default.config.yml")
+# Use optional config.yml and local.config.yml for configuration overrides.
+['config.yml', 'local.config.yml'].each do |config_file|
+  if File.exist?("#{host_config_dir}/#{config_file}")
+    vconfig.merge!(YAML.load_file("#{host_config_dir}/#{config_file}"))
+  end
 end
 
 # Replace jinja variables in config.
@@ -175,6 +175,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Set the name of the VM. See: http://stackoverflow.com/a/17864388/100134
   config.vm.define vconfig['vagrant_machine_name']
+
+  # Cache packages and dependencies if vagrant-cachier plugin is present.
+  if Vagrant.has_plugin?('vagrant-cachier')
+    config.cache.scope = :box
+    config.cache.auto_detect = false
+    config.cache.enable :apt
+    # Cache the composer directory.
+    config.cache.enable :generic, cache_dir: '/home/vagrant/.composer/cache'
+  end
 
   # Allow an untracked Vagrantfile to modify the configurations
   eval File.read "#{host_config_dir}/Vagrantfile.local" if File.exist?("#{host_config_dir}/Vagrantfile.local")

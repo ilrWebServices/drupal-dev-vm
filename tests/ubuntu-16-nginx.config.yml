@@ -1,11 +1,7 @@
 ---
-composer_home_path: "/{{ drupalvm_user }}/.composer"
 drupalvm_webserver: nginx
 
-installed_extras:
-  - adminer
-  - drupalconsole
-  - mailhog
-  - pimpmylog
-  - varnish
-  - xhprof
+# Test makefile based installation.
+build_makefile: true
+build_composer_project: false
+drupal_core_path: "/var/www/drupalvm/drupal"
