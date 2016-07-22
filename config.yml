@@ -19,8 +19,16 @@ vagrant_synced_folders:
   # build_makefile: is 'true'.
   - local_path: ../ilr-website
     destination: /var/www/ilr-website
-    type: nfs
-    create: false
+    type: rsync
+    create: true
+    excluded_paths:
+      - .git
+      - .sass-cache
+      - docs
+      - db
+      - migration_data
+      - tmp
+      - docroot/sites/default/files
 
 # Memory and CPU to use for this VM.
 vagrant_memory: 4096 # Or 1/4 of the total RAM available on your computer
@@ -54,7 +62,7 @@ installed_extras:
   # - blackfire
   - drupalconsole
   - mailhog
-  # - memcached
+  - memcached
   # - newrelic
   # - nodejs
   - pimpmylog
@@ -64,7 +72,7 @@ installed_extras:
   # - solr
   # - varnish
   # - xdebug
-  # - xhprof
+  - xhprof
 
 firewall_allowed_tcp_ports:
   - "22"
