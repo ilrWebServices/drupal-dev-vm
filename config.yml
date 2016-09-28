@@ -1,5 +1,5 @@
 ---
-vagrant_synced_folder_default_type: rsync
+vagrant_synced_folder_default_type: nfs
 
 # If you need to run multiple instances of Drupal VM, set a unique hostname,
 # machine name, and IP address for each instance.
@@ -15,7 +15,7 @@ vagrant_synced_folders:
   # build_makefile: is 'true'.
   - local_path: ../ilr-website
     destination: /var/www/ilr-website
-    type: rsync
+    type: nfs
     create: true
     excluded_paths:
       - .git
@@ -61,7 +61,7 @@ installed_extras:
   # - selenium
   # - solr
   # - varnish
-  # - xdebug
+  - xdebug
   # - xhprof
 
 firewall_allowed_tcp_ports:
@@ -78,3 +78,5 @@ firewall_allowed_tcp_ports:
   - "8983"
 
 php_memory_limit: "256M"
+
+php_xdebug_default_enable: 1
