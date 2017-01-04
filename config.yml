@@ -1,8 +1,4 @@
 ---
-vagrant_synced_folder_default_type: nfs
-
-# If you need to run multiple instances of Drupal VM, set a unique hostname,
-# machine name, and IP address for each instance.
 vagrant_hostname: ilr-website.dev
 vagrant_machine_name: ilr-dev-vm
 vagrant_ip: 192.168.88.89
@@ -17,13 +13,6 @@ vagrant_synced_folders:
     destination: /var/www/ilr-website
     type: nfs
     create: true
-    excluded_paths:
-      - .git
-      - .sass-cache
-      - docs
-      - db
-      - migration_data
-      - tmp
 
 # Memory and CPU to use for this VM.
 vagrant_memory: 4096 # Or 1/4 of the total RAM available on your computer
@@ -32,8 +21,6 @@ vagrant_cpus: 1 # For VirtualBox, see https://github.com/rdsubhas/vagrant-faster
 drupal_composer_install_dir: "/var/www/ilr-website"
 drupal_composer_dependencies: []
 
-# Set this to false if you don't need to install drupal (using the drupal_*
-# settings below), but instead copy down a database (e.g. using drush sql-sync).
 install_site: false
 
 # Settings for building a Drupal site from a makefile (if 'build_makefile:'
@@ -43,14 +30,17 @@ drupal_core_path: "{{ drupal_composer_install_dir }}/docroot"
 drupal_domain: "{{ vagrant_hostname }}"
 drupal_site_name: "ILR Dev Site"
 drupal_install_profile: ilr
-drupal_mysql_database: ilr
+drupal_db_name: ilr
 
 # Comment out any extra utilities you don't want to install. If you don't want
-# to install *any* extras, make set this value to an empty set, e.g. `[]`.
+# to install *any* extras, set this value to an empty set, e.g. `[]`.
 installed_extras:
   - adminer
   # - blackfire
-  - drupalconsole
+  # - drupalconsole
+  - drush
+  # - elasticsearch
+  # - java
   - mailhog
   - memcached
   # - newrelic
@@ -60,7 +50,8 @@ installed_extras:
   # - ruby
   # - selenium
   # - solr
-  # - varnish
+  # - upload-progress
+  - varnish
   - xdebug
   # - xhprof
 
@@ -76,6 +67,7 @@ firewall_allowed_tcp_ports:
   - "8080"
   - "8443"
   - "8983"
+  - "9200"
 
 php_memory_limit: "256M"
 
